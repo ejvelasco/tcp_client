@@ -17,6 +17,18 @@ class Client {
         }
     }
 
+    displayResponses(arr){
+        for( let i = 0; i < arr.length; i++ ){
+            if( arr[i].type === "heartbeat" ){
+                console.log("heartbeat yo");
+            }
+        }
+    }
+
+    receiveInput(){
+        
+    }
+
     connect(port, host, user){
     	const connectionId = JSON.stringify({ name: user });
     	const socket = new net.Socket();
@@ -39,6 +51,7 @@ class Client {
                 neatJSON.pop();
                 //Parse and display valid JSON
                 parsedJSON = neatJSON.map((str) => clientScope.parseJSON(str));
+                clientScope.displayResponses(parsedJSON);
                 //Store partial JSON for next data event
                 partialJSON = chunk.substring(lastNewlineIdx + 1, chunk.length);        
             });
