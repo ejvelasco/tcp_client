@@ -1,5 +1,5 @@
 ## Description
-This is a concise TCP client that plays with a server in a number of ways.
+This is a concise TCP client that interacts with a server in a number of ways.
 ## Client
 The Client class and its methods are defined in Client.js. Explanatory comments have been added where necessary. 
 ## Example
