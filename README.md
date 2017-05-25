@@ -3,7 +3,7 @@ This is a concise TCP client that plays with a server in a number of ways.
 ## Client
 The Client class and its methods are defined in Client.js. Explanatory comments have been added where necessary. 
 ## Example
-The example.js file is a Client class instance that interacts with the server. 
+The example.js file is a Client class instance that actually interacts with a server. 
 ## Tests
 The test suite provided tests the principal methods of the Client class, specifically for the principal features mentioned below. 
 ## The example features the following:
