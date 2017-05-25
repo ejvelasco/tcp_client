@@ -1,35 +1,35 @@
+"use strict";
+
 const net = require("net");
 const readline = require("readline");
 const colors = require("colors");
 
 module.exports = class Client {
     constructor(opts) {
-        this.port = opts.port;
-        this.host = opts.host;
-        this.user = opts.user;
+        this.port = opts.port || 8000;
+        this.host = opts.host || "127.0.0.1";
+        this.user = opts.user || "user";
     }
 
-    displayResponses(arr){
-        for( let i = 0; i < arr.length; i++ ){
-            let displayMessage = "";
-            if( arr[i] === null ){
-                //handle incoming invalid json here
-            } else if( arr[i].type !== "heartbeat" ){
-                if( arr[i].msg.hasOwnProperty("count") ){
-                    displayMessage = "The count is " + arr[i].msg.count + ".";
-                } else if( arr[i].msg.hasOwnProperty("time") ){
-                    displayMessage = "The time and date are " + arr[i].msg.time + ".";
-                    if( arr[i].msg.random > 30 ){
-                        displayMessage += "\nNote: The random number is greater than 30.";
-                    }
-                } else if( this.requestId !== arr[i].msg.reply && arr[i].type !== "welcome" ){
-                    displayMessage = "The reply property of the response message does not match the request ID provided.";
-                } else {
-                    displayMessage = arr[i].msg;
+    displayResponse(obj){
+        let displayMessage = "";
+        if( obj === null || obj.type === "heartbeat" ){
+            displayMessage = null;
+        } else {
+            if( obj.msg.hasOwnProperty("count") ){
+                displayMessage = "The count is " + obj.msg.count + ".";
+            } else if( obj.msg.hasOwnProperty("time") ){
+                displayMessage = "The time and date are " + obj.msg.time + ".";
+                if( obj.msg.random > 30 ){
+                    displayMessage += "\nNote: The random number is greater than 30.";
                 }
-                console.log("Server: " .green + displayMessage);
+            } else if( this.requestId !== obj.msg.reply && obj.type !== "welcome" ){
+                displayMessage = "The reply property of the response message does not match the request ID provided.";
+            } else {
+                displayMessage = obj.msg;
             }
         }
+        return displayMessage;
     }
 
     isBadRequest(obj){
@@ -99,7 +99,13 @@ module.exports = class Client {
                 neatJSON.pop();
                 //Parse and display valid JSON
                 parsedJSON = neatJSON.map((str) => clientScope.parseJSON(str));
-                clientScope.displayResponses(parsedJSON);
+                let displayMessage = "";
+                for( let i = 0; i < parsedJSON.length; i++ ){
+                    displayMessage = clientScope.displayResponse(parsedJSON[i]);
+                    if( displayMessage !== null ){
+                        console.log("Server: " .green + displayMessage);
+                    }
+                }
                 //Store partial JSON for next data event
                 partialJSON = chunk.substring(lastNewlineIdx + 1, chunk.length);        
             });
