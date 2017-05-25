@@ -26,7 +26,7 @@ If mocha is installed globally:
 ```
 $ mocha
 ```
-Else
+Else:
 ```
 $ ./node_modules/mocha/bin/mocha
 ```
