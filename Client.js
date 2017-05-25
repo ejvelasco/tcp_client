@@ -43,7 +43,7 @@ module.exports = class Client {
             error.message = "Please include a request property.";
         } else if( obj.request !== "count" && obj.request !== "time" ){
             error.message = "Please set 'request' property to 'count' or 'time'.";
-        } else if( Object.keys(obj).length > 1 && obj.hasOwnProperty("id") === false ){
+        } else if( (Object.keys(obj).length > 1 && obj.hasOwnProperty("id") === false) || Object.keys(obj).length > 2 ){
             error.message = "Please include only the request and the id (optional) properties.";
         }
         if(error.message !== ""){
