@@ -15,4 +15,14 @@ The test suite provided tests the methods of the Client class, specifically on t
 * Validates outgoing input, and also handles malformed JSON sent by the server.
 * Displays response messages in a nice way.
 * Notifies user if the random number from a time request is greater than 30.
+## To run
+```
+$ git clone https://github.com/velascoDev/tcp_client.git && cd tcp_client
+$ npm install
+$ node example.js 
+```
+## To test
+```
+$ mocha
+```
 
