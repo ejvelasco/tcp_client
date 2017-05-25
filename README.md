@@ -5,7 +5,7 @@ The Client class and its methods are defined in Client.js. Explanatory comments 
 ## Example
 The example.js file is a Client class instance that actually interacts with a server. 
 ## Tests
-The test suite provided tests the principal methods of the Client class, specifically for the principal features mentioned below. 
+The test suite provided tests the methods of the Client class, specifically on the principal features mentioned below. 
 ## The example features the following:
 * Connects and provides credentials to the server.
 * Listens for a heartbeat and times out after 2 seconds without a heartbeat.
