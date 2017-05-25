@@ -6,9 +6,9 @@ const colors = require("colors");
 
 module.exports = class Client {
     constructor(opts) {
-        this.port = opts.port || 3000;
-        this.host = opts.host || "127.0.0.1";
-        this.user = opts.user || "user";
+        this.port = opts.port;
+        this.host = opts.host;
+        this.user = opts.user;
     }
 
     connect(){
@@ -22,14 +22,24 @@ module.exports = class Client {
 
         socket.connect(this.port, this.host);
         socket.on("connect", () => {
-            let neatJSON = "";
-            let partialJSON = "";
-            let chunk = "";
-            let parsedJSON = [];
-            let lastNewlineIdx = 0;
 
             socket.write(connectionId);
             
+            //Store partial JSON from data events
+            let partialJSON = "";
+            socket.on("data", function(data) {
+                const processedData = clientScope.processData(data, partialJSON);
+                let displayMessage = "";
+                partialJSON = processedData.restJSON;
+
+                for( let i = 0; i < processedData.parsedJSON.length; i++ ){
+                    displayMessage = clientScope.displayResponse(processedData.parsedJSON[i]);
+                    if( displayMessage !== null ){
+                        console.log("Server: " .green + displayMessage);
+                    }
+                }  
+            });
+
             rl.on("line", (input) => {
                 if( input !== null ){
                     const parsedInput = clientScope.parseJSON(input.toString());
@@ -40,27 +50,6 @@ module.exports = class Client {
                         console.log(requestError.message .red);
                     }
                 }   
-            });
-
-            socket.on("data", function(data) {
-                chunk = data.toString();
-                lastNewlineIdx = chunk.lastIndexOf("\n");
-                //Store valid JSON from current chunk
-                neatJSON = chunk.substring(0, lastNewlineIdx + 1);
-                //Add partial JSON (if any) from last chunk to the beginning
-                neatJSON = (partialJSON + neatJSON).split("\n");
-                neatJSON.pop();
-                //Parse and display valid JSON
-                parsedJSON = neatJSON.map((str) => clientScope.parseJSON(str));
-                let displayMessage = "";
-                for( let i = 0; i < parsedJSON.length; i++ ){
-                    displayMessage = clientScope.displayResponse(parsedJSON[i]);
-                    if( displayMessage !== null ){
-                        console.log("Server: " .green + displayMessage);
-                    }
-                }
-                //Store partial JSON for next data event
-                partialJSON = chunk.substring(lastNewlineIdx + 1, chunk.length);        
             });
 
             socket.setTimeout(2000, () => {
@@ -135,6 +124,25 @@ module.exports = class Client {
             }
         } catch (e) {
             return null;
+        }
+    }
+
+    processData(data, restJSON){
+        const chunk = data.toString();
+        const lastNewlineIdx = chunk.lastIndexOf("\n");
+        let parsedJSON;
+        //Store valid JSON from current chunk
+        let neatJSON = chunk.substring(0, lastNewlineIdx + 1);
+        //Add partial JSON (if any) from last chunk to the beginning
+        neatJSON = (restJSON + neatJSON).split("\n");
+        neatJSON.pop();
+        //Parse and display valid JSON
+        parsedJSON = neatJSON.map((str) => this.parseJSON(str));
+        //Update partial JSON for next data event
+        restJSON = chunk.substring(lastNewlineIdx + 1, chunk.length);  
+        return {
+            parsedJSON: parsedJSON,
+            restJSON: restJSON
         }
     }
 }
