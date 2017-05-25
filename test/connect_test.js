@@ -11,22 +11,6 @@ const options = {
     user: "Jose"
 }  
 
-function areEqualObjects(objOne, objTwo){
-    const keysOne = Object.keys(objOne);
-    const keysTwo = Object.keys(objTwo);
-    if( keysOne.length !== keysTwo.length ){
-        return false;
-    }
-    let areEqual = true;
-    for( let i = 0; i < keysOne.length; i++ ){
-        if( objOne[keysOne[i]] !== objTwo[keysOne[i]] ){
-            areEqual = false;
-            break;
-        }
-    }
-    return areEqual;
-}
-
 describe("connect()", () => {
     describe("socket.on('connect')", () => {
         it("Should log in as client", (done) => {
@@ -65,7 +49,7 @@ describe("connect()", () => {
                     const processedData = client.processData(data, partialJSON);
                     partialJSON = processedData.restJSON;
                     for( let i = 0; i < processedData.parsedJSON.length; i++ ){
-                        assert.equal(areEqualObjects(processedData.parsedJSON[i], message), true);
+                        assert.equal(JSON.stringify(processedData.parsedJSON[i]), JSON.stringify(message));
                     }
                 });
                 testClient.on("close", () => {
