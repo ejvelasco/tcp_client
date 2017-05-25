@@ -16,22 +16,23 @@ module.exports = class Client {
         const connectionId = JSON.stringify({ name: this.user });
         const socket = new net.Socket();
         const rl = readline.createInterface({
-                input: process.stdin,
-                output: process.stdout
+            input: process.stdin,
+            output: process.stdout
         });
-
+        //connect
         socket.connect(this.port, this.host);
         socket.on("connect", () => {
-
+            //log in
             socket.write(connectionId);
-            
-            //Store partial JSON from data events
+            //will store left over JSON from data events
             let partialJSON = "";
+            //data event
             socket.on("data", function(data) {
+                //process as much valid JSON as possible and store the rest for the next event
                 const processedData = clientScope.processData(data, partialJSON);
-                let displayMessage = "";
                 partialJSON = processedData.restJSON;
-
+                //display messages from valid JSON
+                let displayMessage = "";
                 for( let i = 0; i < processedData.parsedJSON.length; i++ ){
                     displayMessage = clientScope.displayResponse(processedData.parsedJSON[i]);
                     if( displayMessage !== null ){
@@ -39,11 +40,11 @@ module.exports = class Client {
                     }
                 }  
             });
-
+            //line event
             rl.on("line", (input) => {
                 if( input !== null ){
                     const parsedInput = clientScope.parseJSON(input.toString());
-                    const requestError = clientScope.isBadRequest(parsedInput);
+                    const requestError = clientScope.checkRequest(parsedInput);
                     if( requestError.status === false ){
                         socket.write(JSON.stringify(parsedInput));
                     } else{
@@ -51,7 +52,7 @@ module.exports = class Client {
                     }
                 }   
             });
-
+            //configure socket timeout
             socket.setTimeout(2000, () => {
                 console.log("\nTimed out! Disconnecting..." .yellow);
                 socket.end();
@@ -88,7 +89,7 @@ module.exports = class Client {
         return displayMessage;
     }
 
-    isBadRequest(obj){
+    checkRequest(obj){
         const error = {
             status: false,
             message: ""
@@ -131,15 +132,16 @@ module.exports = class Client {
         const chunk = data.toString();
         const lastNewlineIdx = chunk.lastIndexOf("\n");
         let parsedJSON;
-        //Store valid JSON from current chunk
+        //Store as much valid JSON as possible from chunk 
         let neatJSON = chunk.substring(0, lastNewlineIdx + 1);
-        //Add partial JSON (if any) from last chunk to the beginning
+        //Add leftover JSON (if any) from last chunk to the beginning  
         neatJSON = (restJSON + neatJSON).split("\n");
         neatJSON.pop();
-        //Parse and display valid JSON
+        //Parse the valid JSON from chunk
         parsedJSON = neatJSON.map((str) => this.parseJSON(str));
         //Update partial JSON for next data event
         restJSON = chunk.substring(lastNewlineIdx + 1, chunk.length);  
+        //the parsed JSON is returned for display, the remaining JSON is used next data event
         return {
             parsedJSON: parsedJSON,
             restJSON: restJSON

@@ -13,7 +13,7 @@ const options = {
 const client =  new Client(options);
 client.connect();
 
-describe("isBadRequest()", () => {
+describe("checkRequest()", () => {
     it("Should check input is formatted properly and show a helpful error message if necessary", () => {
         const errorMessages = [ 
             "Please include a request property.", 
@@ -28,7 +28,7 @@ describe("isBadRequest()", () => {
         ];
         let requestError;
         for( let i = 0; i < sampleInput.length; i++ ){
-            requestError = client.isBadRequest(sampleInput[i]["input"]);
+            requestError = client.checkRequest(sampleInput[i]["input"]);
             assert.equal(requestError.message, sampleInput[i]["error"]);
         }
     });

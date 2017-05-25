@@ -10,9 +10,10 @@ const options = {
     host: "127.0.0.1",
     user: "Jose"
 }  
+
 function areEqualObjects(objOne, objTwo){
-    const keysOne = Object.keys(objOne),
-        keysTwo = Object.keys(objTwo);
+    const keysOne = Object.keys(objOne);
+    const keysTwo = Object.keys(objTwo);
     if( keysOne.length !== keysTwo.length ){
         return false;
     }
@@ -25,6 +26,7 @@ function areEqualObjects(objOne, objTwo){
     }
     return areEqual;
 }
+
 describe("connect()", () => {
     describe("socket.on('connect')", () => {
         it("Should log in as client", (done) => {
