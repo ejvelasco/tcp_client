@@ -6,56 +6,9 @@ const colors = require("colors");
 
 module.exports = class Client {
     constructor(opts) {
-        this.port = opts.port || 8000;
+        this.port = opts.port || 3000;
         this.host = opts.host || "127.0.0.1";
         this.user = opts.user || "user";
-    }
-
-    displayResponse(obj){
-        let displayMessage = "";
-        if( obj === null || obj.type === "heartbeat" ){
-            displayMessage = null;
-        } else {
-            if( obj.msg.hasOwnProperty("count") ){
-                displayMessage = "The count is " + obj.msg.count + ".";
-            } else if( obj.msg.hasOwnProperty("time") ){
-                displayMessage = "The time and date are " + obj.msg.time + ".";
-                if( obj.msg.random > 30 ){
-                    displayMessage += "\nNote: The random number is greater than 30.";
-                }
-            } else if( this.requestId !== obj.msg.reply && obj.type !== "welcome" ){
-                displayMessage = "The reply property of the response message does not match the request ID provided.";
-            } else {
-                displayMessage = obj.msg;
-            }
-        }
-        return displayMessage;
-    }
-
-    isBadRequest(obj){
-        const error = {
-            status: false,
-            message: ""
-        }
-        if( obj === null ){
-            error.message = "Please enter valid JSON.";
-        } else if( obj.hasOwnProperty("request") === false ){
-            error.message = "Please include a request property.";
-        } else if( obj.request !== "count" && obj.request !== "time" ){
-            error.message = "Please set 'request' property to 'count' or 'time'.";
-        } else if( (Object.keys(obj).length > 1 && obj.hasOwnProperty("id") === false) || Object.keys(obj).length > 2 ){
-            error.message = "Please include only the request and the id (optional) properties.";
-        }
-        if(error.message !== ""){
-            error.status = true;
-        } else {
-            if( obj.hasOwnProperty("id") === true ){
-                this.requestId = obj.id;    
-            } else {
-                this.requestId = null;
-            }
-        }
-        return error;
     }
 
     connect(){
@@ -123,6 +76,53 @@ module.exports = class Client {
         socket.on("error", (error) => {
             console.log(error .red);
         });
+    }
+    
+    displayResponse(obj){
+        let displayMessage = "";
+        if( obj === null || obj.type === "heartbeat" ){
+            displayMessage = null;
+        } else {
+            if( obj.msg.hasOwnProperty("count") ){
+                displayMessage = "The count is " + obj.msg.count + ".";
+            } else if( obj.msg.hasOwnProperty("time") ){
+                displayMessage = "The time and date are " + obj.msg.time + ".";
+                if( obj.msg.random > 30 ){
+                    displayMessage += "\nNote: The random number is greater than 30.";
+                }
+            } else if( this.requestId !== obj.msg.reply && obj.type !== "welcome" ){
+                displayMessage = "The reply property of the response message does not match the request ID provided.";
+            } else {
+                displayMessage = obj.msg;
+            }
+        }
+        return displayMessage;
+    }
+
+    isBadRequest(obj){
+        const error = {
+            status: false,
+            message: ""
+        }
+        if( obj === null ){
+            error.message = "Please enter valid JSON.";
+        } else if( obj.hasOwnProperty("request") === false ){
+            error.message = "Please include a request property.";
+        } else if( obj.request !== "count" && obj.request !== "time" ){
+            error.message = "Please set 'request' property to 'count' or 'time'.";
+        } else if( (Object.keys(obj).length > 1 && obj.hasOwnProperty("id") === false) || Object.keys(obj).length > 2 ){
+            error.message = "Please include only the request and the id (optional) properties.";
+        }
+        if(error.message !== ""){
+            error.status = true;
+        } else {
+            if( obj.hasOwnProperty("id") === true ){
+                this.requestId = obj.id;    
+            } else {
+                this.requestId = null;
+            }
+        }
+        return error;
     }
     
     parseJSON(json){

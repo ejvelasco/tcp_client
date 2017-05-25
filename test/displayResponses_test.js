@@ -1,3 +1,5 @@
+"use strict";
+
 const net = require("net");
 const colors = require("colors");   
 const readline = require("readline");

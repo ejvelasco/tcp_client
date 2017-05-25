@@ -1,3 +1,5 @@
+"use strict";
+
 const net = require("net");
 const colors = require("colors");   
 const readline = require("readline");
@@ -23,7 +25,7 @@ describe("parseJSON()", () => {
             { json: 'any' },
             { json: false }
         ];
-        let alert;
+        let parsedJSON;
         for( let i = 0; i < badJSON.length; i++ ){
             parsedJSON = client.parseJSON(badJSON[i]["json"]);
             assert.equal(parsedJSON, null);
