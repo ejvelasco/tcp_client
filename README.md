@@ -22,6 +22,7 @@ $ npm install
 $ node example.js 
 ```
 ## To test
+If mocha is installed globally:
 ```
 $ mocha
 ```
