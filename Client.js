@@ -74,9 +74,9 @@ module.exports = class Client {
             displayMessage = null;
         } else {
             if( obj.msg.hasOwnProperty("count") ){
-                displayMessage = "The count is " + obj.msg.count + ".";
+                displayMessage = `The count is ${obj.msg.count}.`;
             } else if( obj.msg.hasOwnProperty("time") ){
-                displayMessage = "The time and date are " + obj.msg.time + ".";
+                displayMessage = `The time and date are ${obj.msg.time}.`;
                 if( obj.msg.random > 30 ){
                     displayMessage += "\nNote: The random number is greater than 30.";
                 }
