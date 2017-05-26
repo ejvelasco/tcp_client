@@ -12,7 +12,6 @@ module.exports = class Client {
     }
 
     connect(){
-        const clientScope = this;
         const connectionId = JSON.stringify({ name: this.user });
         const socket = new net.Socket();
         const rl = readline.createInterface({
@@ -27,14 +26,14 @@ module.exports = class Client {
             //will store left over JSON from data events
             let partialJSON = "";
             //data event
-            socket.on("data", function(data) {
+            socket.on("data", (data) => {
                 //process as much valid JSON as possible and store the rest for the next event
-                const processedData = clientScope.processData(data, partialJSON);
+                const processedData = this.processData(data, partialJSON);
                 partialJSON = processedData.restJSON;
                 //display messages from valid JSON
                 let displayMessage = "";
                 for( let i = 0; i < processedData.parsedJSON.length; i++ ){
-                    displayMessage = clientScope.displayResponse(processedData.parsedJSON[i]);
+                    displayMessage = this.displayResponse(processedData.parsedJSON[i]);
                     if( displayMessage !== null ){
                         console.log("Server: " .green + displayMessage);
                     }
@@ -43,8 +42,8 @@ module.exports = class Client {
             //line event
             rl.on("line", (input) => {
                 if( input !== null ){
-                    const parsedInput = clientScope.parseJSON(input.toString());
-                    const requestError = clientScope.checkRequest(parsedInput);
+                    const parsedInput = this.parseJSON(input.toString());
+                    const requestError = this.checkRequest(parsedInput);
                     if( requestError.status === false ){
                         socket.write(JSON.stringify(parsedInput));
                     } else{
@@ -61,7 +60,7 @@ module.exports = class Client {
         });
         socket.on("close", () => {
             console.log("Reconnecting..\n" .yellow);
-            clientScope.connect();
+            this.connect();
         });
         socket.on("error", (error) => {
             console.log(error .red);
