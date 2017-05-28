@@ -15,6 +15,7 @@ The test suite provided tests the methods of the Client class, specifically on s
 * Validates outgoing input, and also handles malformed JSON sent by the server.
 * Displays response messages in a nice way.
 * Notifies user if the random number from a time request is greater than 30.
+* If no options are provided when instantiating the Client class, then it will attempt to connect to a server at 127.0.0.1:8000, with user id "Anonymous".
 ## To run
 ```
 $ git clone https://github.com/velascoDev/tcp_client.git && cd tcp_client

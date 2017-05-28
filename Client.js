@@ -5,10 +5,10 @@ const readline = require("readline");
 const colors = require("colors");
 
 module.exports = class Client {
-    constructor(opts) {
-        this.port = opts.port;
-        this.host = opts.host;
-        this.user = opts.user;
+    constructor({ port = 8000, host = "127.0.0.1", user = "Anonymous" } = {}) {  
+        this.port = port;
+        this.host = host;
+        this.user = user;
     }
 
     connect(){
